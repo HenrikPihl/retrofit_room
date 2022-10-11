@@ -9,7 +9,6 @@ import io.shortcut.dtucourceretrofit_room.datasource.webservice.EmojiApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -19,21 +18,15 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun providesOkHttpClient(): OkHttpClient =
-        OkHttpClient
-            .Builder()
-            .callTimeout(0, TimeUnit.SECONDS)
-            .build()
-
-    @ExperimentalStdlibApi
-    @Singleton
-    @Provides
-    fun provideMoshi(): Moshi = Moshi.Builder()
-        .build()
+    fun providesOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
 
     @Singleton
     @Provides
-    fun provideNoUnWrapRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit = Retrofit.Builder()
+    fun provideMoshi(): Moshi = Moshi.Builder().build()
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit = Retrofit.Builder()
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .baseUrl(BASE_URL)
         .client(okHttpClient)
@@ -41,6 +34,5 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun provideGoCookApi(retrofit: Retrofit): EmojiApi = retrofit.create(EmojiApi::class.java)
-
+    fun provideEmojiApi(retrofit: Retrofit): EmojiApi = retrofit.create(EmojiApi::class.java)
 }
