@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
     lateinit var emojiRepository: EmojiRepository
 
     val emojisState by lazy {
-        emojiRepository.getEmojis()
+        emojiRepository.getEmojisFromDb()
             .stateIn(lifecycleScope, started = SharingStarted.WhileSubscribed(), emptyList())
 
     }
