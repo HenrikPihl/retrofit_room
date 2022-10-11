@@ -21,32 +21,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import io.shortcut.dtucourceretrofit_room.datasource.webservice.EmojiApi
+import io.shortcut.dtucourceretrofit_room.datasource.EmojiRepository
 import io.shortcut.dtucourceretrofit_room.ui.theme.DTUCourceRetrofitRoomTheme
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var emojiApi: EmojiApi
+    lateinit var emojiRepository: EmojiRepository
 
-    val emojisState = MutableStateFlow<List<Emoji>>(emptyList())
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-
-            val emojiList = emojiApi.getAllEmojis()
-
-            emojisState.emit(emojiList.map {
+    val emojisState by lazy {
+        emojiRepository.getEmojis().map { list ->
+            list.map {
                 val emojiFromHtml = Html.fromHtml(it.htmlCode.first(), Html.FROM_HTML_MODE_LEGACY)
 
                 Emoji(name = it.name, emoji = emojiFromHtml.toString(), it.category, it.group)
-            })
-        }
+            }
+        }.stateIn(lifecycleScope, started = SharingStarted.WhileSubscribed(), emptyList())
+
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         setContent {
             DTUCourceRetrofitRoomTheme {
