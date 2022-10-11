@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import io.shortcut.dtucourceretrofit_room.datasource.Emoji
 import io.shortcut.dtucourceretrofit_room.datasource.EmojiRepository
 import io.shortcut.dtucourceretrofit_room.ui.theme.DTUCourceRetrofitRoomTheme
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -35,13 +35,8 @@ class MainActivity : ComponentActivity() {
     lateinit var emojiRepository: EmojiRepository
 
     val emojisState by lazy {
-        emojiRepository.getEmojis().map { list ->
-            list.map {
-                val emojiFromHtml = Html.fromHtml(it.htmlCode.first(), Html.FROM_HTML_MODE_LEGACY)
-
-                Emoji(name = it.name, emoji = emojiFromHtml.toString(), it.category, it.group)
-            }
-        }.stateIn(lifecycleScope, started = SharingStarted.WhileSubscribed(), emptyList())
+        emojiRepository.getEmojis()
+            .stateIn(lifecycleScope, started = SharingStarted.WhileSubscribed(), emptyList())
 
     }
 
@@ -69,8 +64,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-data class Emoji(val name: String, val emoji: String, val category: String, val group: String)
 
 @Composable
 fun EmojiCard(emoji: Emoji) {
