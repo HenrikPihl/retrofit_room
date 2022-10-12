@@ -26,7 +26,7 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            "emojo.db"
+            "emoji.db"
         )
             .build()
     }
