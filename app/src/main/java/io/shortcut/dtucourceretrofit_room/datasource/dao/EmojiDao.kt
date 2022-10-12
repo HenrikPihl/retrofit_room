@@ -21,4 +21,7 @@ interface EmojiDao {
 
     @Query("SELECT * FROM emoji")
     fun getEmojis(): Flow<List<EmojiEntity>>
+
+    @Query("SELECT e.* FROM emoji e JOIN emoji_fts ef ON e.id = ef.id WHERE emoji_fts MATCH :query")
+    fun getMatchingEmojis(query: String): Flow<List<EmojiEntity>>
 }

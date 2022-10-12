@@ -28,6 +28,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "emoji.db"
         )
+            .fallbackToDestructiveMigration()
             .build()
     }
 
